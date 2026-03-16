@@ -13,6 +13,15 @@ async function startBroker() {
     const httpServer = http.createServer();
     const wss = new WebSocketServer({ server: httpServer });
 
+    // Configurar autenticación
+    aedes.on('authenticate', (client, username, password, callback) => {
+        if (username === 'clarita' && password.toString() === 'datos@2026') {
+            callback(null, true);
+        } else {
+            callback(new Error('Credenciales inválidas'), false);
+        }
+    });
+
     mqttServer.listen(MQTT_PORT, () =>
         console.log(`[MQTT] Broker TCP escuchando en el puerto ${MQTT_PORT}`)
     );
