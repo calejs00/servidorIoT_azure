@@ -1,0 +1,24 @@
+# # Dependencias
+# # esta carpeta no se sube a github porque ocupa demasiaod y son demsiados ficheros
+# node_modules/       
+
+# # Variables de entorno
+# .env
+# .env.*
+# !.env.example
+
+# # Logs
+# logs/
+# test-mqtt/
+# *.log
+# npm-debug.log*
+
+# # Sistema operativo
+# .DS_Store
+# Thumbs.db
+
+# # Editor
+# .vscode/
+# .idea/
+node_modules/
+.env
