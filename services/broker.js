@@ -8,19 +8,24 @@ async function startBroker() {
     const MQTT_PORT = process.env.MQTT_PORT || 1883;
     const WS_PORT   = process.env.MQTT_WS_PORT || 8888;
 
-    const aedes = await Aedes.createBroker();
+    const BROKER_USER = process.env.MQTT_USER || 'clarita';
+    const BROKER_PASS = process.env.MQTT_PASS || 'datos@2026';
+
+    const aedes = await Aedes.createBroker({
+        authenticate: (client, username, password, callback) => {
+            const passwordString = password ? password.toString() : '';
+            const success = username === BROKER_USER && passwordString === BROKER_PASS;
+            if (!success) {
+                const error = new Error('Identificación MQTT inválida. Usuario/contraseña incorrectos.');
+                error.returnCode = 4; // Connection refused, bad user name or password
+                return callback(error, false);
+            }
+            callback(null, true);
+        },
+    });
     const mqttServer = net.createServer(aedes.handle);
     const httpServer = http.createServer();
     const wss = new WebSocketServer({ server: httpServer });
-
-    // Configurar autenticación
-    aedes.on('authenticate', (client, username, password, callback) => {
-        if (username === 'clarita' && password.toString() === 'datos@2026') {
-            callback(null, true);
-        } else {
-            callback(new Error('Credenciales inválidas'), false);
-        }
-    });
 
     mqttServer.listen(MQTT_PORT, () =>
         console.log(`[MQTT] Broker TCP escuchando en el puerto ${MQTT_PORT}`)
